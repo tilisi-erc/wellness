@@ -2,58 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Tilisi Wellness Coach V2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Tilisi Wellness Coach V3</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#e8f5e9 0%,#fffde7 100%);min-height:100vh;padding:12px;color:#222}
-  .container{max-width:440px;margin:0 auto}
-  @media(min-width:700px){.container{max-width:520px}}
-  header{text-align:center;padding:18px 0 10px}
-  header h1{color:#2e7d32;font-size:26px;font-weight:900}
-  header p{color:#666;font-size:13px;margin-top:2px}
-  .card{background:#fff;border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(0,0,0,.08);margin-bottom:14px}
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{width:100%;overflow-x:hidden}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#e8f5e9 0%,#fffde7 100%);min-height:100dvh;padding:10px 10px calc(10px + env(safe-area-inset-bottom));color:#222;font-size:15px}
+  .container{width:100%;max-width:100%;margin:0 auto}
+  @media(min-width:480px){.container{max-width:430px}}
+  header{text-align:center;padding:14px 0 8px}
+  header h1{color:#2e7d32;font-size:22px;font-weight:900;letter-spacing:-.3px}
+  header p{color:#666;font-size:12px;margin-top:2px}
+  .card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.07);margin-bottom:12px;width:100%}
   input,button{font-family:inherit}
-  input{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:12px;font-size:15px;outline:none;margin-bottom:8px}
+  input{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:12px;font-size:16px;outline:none;margin-bottom:8px;background:#fff}
   input:focus{border-color:#2e7d32}
-  .row{display:flex;gap:8px}
-  .row input{flex:1}
-  .btn{padding:13px 12px;border-radius:12px;border:none;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;width:100%}
+  .row{display:flex;gap:8px;width:100%}
+  .row input{flex:1;min-width:0}
+  .btn{padding:13px 12px;border-radius:12px;border:none;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:6px}
   .btn:active{transform:scale(.97)}
   .btn-primary{background:#2e7d32;color:#fff}
   .btn-dark{background:#1b5e20;color:#fff}
   .btn-light{background:#f1f8e9;color:#2e7d32;border:1px solid #c5e1a5}
-  .btn-mpesa{background:#0d7b3e;color:#fff;background:linear-gradient(90deg,#0d7b3e,#27ae60)}
+  .btn-mpesa{background:linear-gradient(90deg,#0d7b3e,#27ae60);color:#fff}
+  .btn-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc80}
   .btn:disabled{opacity:.5}
-  #status{background:#f1f8e9;border-radius:12px;padding:12px;font-size:13.5px;color:#33691e;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;margin:10px 0}
-  .mic-wrap{display:flex;justify-content:center;margin:12px 0}
-  .mic{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#2e7d32,#66bb6a);color:#fff;border:none;font-size:36px;cursor:pointer;box-shadow:0 8px 20px rgba(46,125,50,.35)}
+  #status{background:#f1f8e9;border-radius:12px;padding:11px;font-size:13px;color:#33691e;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;margin:10px 0;line-height:1.3}
+  .mic-wrap{display:flex;justify-content:center;margin:10px 0}
+  .mic{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#2e7d32,#66bb6a);color:#fff;border:none;font-size:32px;cursor:pointer;box-shadow:0 8px 18px rgba(46,125,50,.35);flex-shrink:0}
   .mic.listening{animation:pulse 1.2s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,125,50,.7)}70%{box-shadow:0 0 0 18px rgba(46,125,50,0)}100%{box-shadow:0 0 0 0 rgba(46,125,50,0)}}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid-3{grid-template-columns:1fr 1fr 1fr}
   .hidden{display:none!important}
-  #advice{margin-top:12px;background:#fffde7;border-left:4px solid #f9a825;padding:13px;border-radius:0 12px 12px 0;font-size:14px;line-height:1.5;white-space:pre-wrap}
-  .badge{display:inline-block;background:#e8f5e9;color:#2e7d32;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;margin-bottom:6px}
-  .divider{height:1px;background:#eee;margin:12px 0}
-  .small{font-size:11px;color:#888;text-align:center;margin-top:6px}
+  #advice{margin-top:10px;background:#fffde7;border-left:4px solid #f9a825;padding:12px;border-radius:0 12px 12px 0;font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+  .badge{display:inline-block;background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800;margin-bottom:6px}
+  .divider{height:1px;background:#eee;margin:10px 0}
+  .small{font-size:11px;color:#777;text-align:center;margin-top:6px;line-height:1.3}
   .walk-bar{height:8px;background:#e0e0e0;border-radius:10px;overflow:hidden;margin-top:8px}
   .walk-fill{height:100%;width:0%;background:#2e7d32;transition:.4s}
-  .footer{text-align:center;font-size:11px;color:#999;margin:10px 0}
-  .pill{display:inline-block;padding:6px 10px;background:#f5f5f5;border-radius:20px;font-size:12px;margin:4px 4px 0 0}
+  .footer{text-align:center;font-size:10px;color:#999;margin:8px 0}
+  .till-box{background:#f6fef7;border:1.5px dashed #27ae60;border-radius:14px;padding:12px;margin-top:10px}
+  .pdf-row{display:flex;gap:6px;margin-top:8px}
+  .pdf-row .btn{font-size:12px;padding:10px 6px;min-height:42px}
+  .calib{font-size:10px;color:#555;background:#fafafa;padding:8px;border-radius:10px;margin-top:8px;line-height:1.3}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
   <h1>🌿 Tilisi Wellness</h1>
-  <p>Walk • Breathe • Balance • Made in Kenya 🇰🇪</p>
+  <p>Till 6899566 • Walk • Breathe • Balance • Kenya 🇰🇪</p>
 </header>
 
 <!-- AUTH CARD -->
 <div class="card" id="authCard">
-  <div class="badge">ACCOUNT</div>
-  <h3 style="margin:6px 0 10px">Sign in with your Name</h3>
-  <input id="nameInput" placeholder="Your full name e.g Jane Wafula" autocomplete="name">
+  <div class="badge">ACCOUNT - NAME BASED</div>
+  <h3 style="margin:6px 0 8px;font-size:16px">Sign in with your Name</h3>
+  <input id="nameInput" placeholder="Full name e.g Jane Wafula" autocomplete="name" autocapitalize="words">
   <input id="passInput" type="password" placeholder="Password (4+ chars)">
   <div class="row">
     <button class="btn btn-primary" onclick="login()">Sign In</button>
@@ -61,85 +67,109 @@
   </div>
   <div id="authMsg" class="small"></div>
 
-  <!-- Signup extra -->
-  <div id="signupBox" class="hidden" style="margin-top:12px">
+  <div id="signupBox" class="hidden" style="margin-top:10px">
     <div class="divider"></div>
     <div class="badge">NEW USER</div>
     <div class="row">
-      <input id="phoneInput" type="tel" placeholder="M-Pesa Phone 07..">
-      <input id="weightInput" type="number" placeholder="Weight KG e.g 78">
+      <input id="phoneInput" type="tel" placeholder="M-Pesa Phone 07xx" inputmode="numeric">
+      <input id="weightInput" type="number" placeholder="Weight KG" inputmode="decimal">
     </div>
-    <input id="heightInput" type="number" placeholder="Height cm e.g 165">
-    <button class="btn btn-dark" onclick="register()">Create Account</button>
+    <input id="heightInput" type="number" placeholder="Height cm e.g 165" inputmode="numeric">
+    <button class="btn btn-dark" onclick="register()">Create Account (3 Free Trials)</button>
   </div>
 
-  <!-- Mpesa -->
-  <div id="mpesaBox" class="hidden" style="margin-top:12px">
-    <div class="divider"></div>
-    <div class="badge">M-PESA PAYMENT</div>
-    <p style="font-size:13px;margin:6px 0">Pay <b>KES 299/month</b> to unlock Tilisi Coach, walk tracker & nutrition.</p>
-    <button class="btn btn-mpesa" id="mpesaBtn" onclick="payMpesa()">Lipa KES 299 via M-Pesa STK</button>
-    <div class="small">Demo: Auto-approved (Real Daraja STK will be added later)</div>
+  <div id="mpesaBox" class="hidden">
+    <div class="till-box">
+      <div class="badge">LIPA NA M-PESA</div>
+      <div style="font-size:13px;font-weight:700">Till Number: 6899566 (Buy Goods)</div>
+      <div class="small" style="text-align:left;margin:6px 0">
+        1. M-Pesa → Lipa na M-Pesa → Buy Goods → <b>6899566</b><br>
+        2. Amount: <b>100</b> Weekly or <b>500</b> Monthly<br>
+        3. Enter PIN → Copy M-Pesa Code e.g <b>QGH7X8Y9Z0</b><br>
+        4. Paste code below to verify
+      </div>
+      <input id="mpesaCodeInput" placeholder="Enter M-Pesa Code e.g QGH7X8Y9Z0" autocapitalize="characters" style="text-transform:uppercase">
+      <div class="row">
+        <button class="btn btn-mpesa" onclick="verifyMpesa('weekly')">Verify 100 Weekly</button>
+        <button class="btn btn-dark" onclick="verifyMpesa('monthly')">Verify 500 Monthly</button>
+      </div>
+      <div id="mpesaStatus" class="small"></div>
+    </div>
+  </div>
+
+  <div class="calib">
+    <b>Calibrated:</b> Sugar mmol/L: &lt;3.0 Very Low (honey, NO insulin), 3.0-3.8 Low, 3.9-5.5 Normal, 5.6-7.7 Pre-High, 11.1+ Very High, &gt;20 Emergency HI.<br>
+    BP: &lt;90/60 Low, 90-119/60-79 Normal, 120-139/80-89 High-1, 140-180/90-120 High-2, &gt;180 Crisis
   </div>
 </div>
 
-<!-- MAIN APP CARD -->
+<!-- MAIN APP -->
 <div class="card hidden" id="appCard">
-  <div class="badge">WELCOME <span id="userNameBadge"></span></div>
-  <div id="status">Karibu! What would you like to do today? Would you like to assess your BP, Sugar levels, or Weight?</div>
+  <div class="badge">WELCOME <span id="userNameBadge"></span> • <span id="accessBadge"></span></div>
+  <div id="status">Karibu! What would you like to do? Assess BP, Sugar (mmol/L), or Weight?</div>
 
   <div class="mic-wrap">
     <button id="micBtn" class="mic" onclick="startListen()">🎤</button>
   </div>
-  <div class="small">Tap mic & say: "Check BP" or "Check Sugar" or "Check Weight"</div>
+  <div class="small">Tap mic & say: "Check BP" / "Check Sugar" / "Check Weight"</div>
 
-  <div class="grid" style="margin-top:12px">
-    <button class="btn btn-primary" onclick="openInput('bp')">💓 Assess BP</button>
-    <button class="btn btn-primary" onclick="openInput('sugar')">🩸 Sugar Levels</button>
-    <button class="btn btn-primary" onclick="openInput('weight')">⚖️ Weight</button>
-    <button class="btn btn-light" onclick="openInput('walk')">🚶 Walk / Jog</button>
-    <button class="btn btn-light" style="grid-column:1/-1" onclick="getNutrition()">🥗 My Nutrition (by sugar)</button>
+  <div class="grid" style="margin-top:10px">
+    <button class="btn btn-primary" onclick="openInput('bp')">💓 BP</button>
+    <button class="btn btn-primary" onclick="openInput('sugar')">🩸 Sugar mmol/L</button>
+    <button class="btn btn-primary" onclick="openInput('weight')">⚖️ Weight + BMI</button>
+    <button class="btn btn-light" onclick="openInput('walk')">🚶 Walk/Jog</button>
+    <button class="btn btn-light" style="grid-column:1/-1" onclick="getNutrition()">🥗 Nutrition by Sugar</button>
   </div>
 
-  <!-- INPUT AREAS -->
-  <div id="bpBox" class="hidden" style="margin-top:12px">
-    <div class="badge">BP ENTRY</div>
+  <div id="bpBox" class="hidden" style="margin-top:10px">
+    <div class="badge">BP ENTRY mmHg</div>
     <div class="row">
-      <input id="sys" type="number" placeholder="Systolic e.g 120">
-      <input id="dia" type="number" placeholder="Diastolic e.g 80">
+      <input id="sys" type="number" placeholder="Systolic e.g 120" inputmode="numeric">
+      <input id="dia" type="number" placeholder="Diastolic e.g 80" inputmode="numeric">
     </div>
-    <input id="pulse" type="number" placeholder="Pulse e.g 72">
-    <button class="btn btn-primary" onclick="submitReading('bp')">Save BP Reading</button>
+    <input id="pulse" type="number" placeholder="Pulse e.g 72" inputmode="numeric">
+    <button class="btn btn-primary" onclick="submitReading('bp')">Save BP</button>
   </div>
 
-  <div id="sugarBox" class="hidden" style="margin-top:12px">
-    <div class="badge">SUGAR ENTRY</div>
-    <input id="glucose" type="number" placeholder="Blood Sugar mg/dL e.g 95">
-    <button class="btn btn-primary" onclick="submitReading('sugar')">Save Sugar Reading</button>
+  <div id="sugarBox" class="hidden" style="margin-top:10px">
+    <div class="badge">SUGAR ENTRY mmol/L (1-33)</div>
+    <input id="glucose" type="number" step="0.1" placeholder="e.g 5.5 mmol/L (NOT mg/dL)" inputmode="decimal">
+    <div class="small" style="text-align:left">Guide: &lt;3.0 Very Low = honey, NO insulin! 3.9-5.5 Normal, 5.6-6.9 Pre-high, 7.8-11 High, &gt;13.9 Critical, &gt;20 HI Emergency</div>
+    <button class="btn btn-primary" onclick="submitReading('sugar')">Save Sugar mmol/L</button>
   </div>
 
-  <div id="weightBox" class="hidden" style="margin-top:12px">
-    <div class="badge">WEIGHT ENTRY</div>
-    <input id="weight2" type="number" placeholder="Current Weight KG e.g 78">
-    <button class="btn btn-primary" onclick="submitReading('weight')">Save Weight & Get Walk Plan</button>
+  <div id="weightBox" class="hidden" style="margin-top:10px">
+    <div class="badge">WEIGHT + BMI</div>
+    <input id="weight2" type="number" step="0.1" placeholder="Current Weight KG e.g 78" inputmode="decimal">
+    <div class="small" style="text-align:left" id="bmiPreview"></div>
+    <button class="btn btn-primary" onclick="submitReading('weight')">Save Weight & BMI</button>
   </div>
 
-  <div id="walkBox" class="hidden" style="margin-top:12px">
-    <div class="badge">WALK ENGINE</div>
+  <div id="walkBox" class="hidden" style="margin-top:10px">
+    <div class="badge">WALK ENGINE - Steps + Time + Calories</div>
     <div class="row">
-      <input id="targetMiles" type="number" value="1.5" step="0.5" placeholder="Miles target">
-      <input id="targetMin" type="number" value="20" placeholder="Minutes">
+      <input id="targetMiles" type="number" value="1.0" step="0.5" placeholder="Miles" inputmode="decimal">
+      <input id="targetMin" type="number" value="15" placeholder="Minutes" inputmode="numeric">
     </div>
     <button class="btn btn-dark" id="walkStartBtn" onclick="startWalk()">▶️ Start Walk Tracker</button>
-    <div id="walkStats" class="small" style="margin-top:8px">Ready to count steps using time + motion.</div>
+    <div id="walkStats" class="small" style="margin-top:6px">Uses timer + step simulation, accurate calories = weight x miles.</div>
     <div class="walk-bar"><div id="walkFill" class="walk-fill"></div></div>
   </div>
 
-  <div id="advice">Tap an option above or speak. Nutrition advice will adapt to your last sugar level.</div>
+  <div id="advice">Tap option above. Nutrition adapts to your last sugar mmol/L.</div>
+
+  <div class="divider"></div>
+  <div class="badge">PDF REPORTS - DOWNLOAD</div>
+  <div class="pdf-row">
+    <button class="btn btn-light" onclick="downloadPDF('daily')">📄 Daily PDF</button>
+    <button class="btn btn-light" onclick="downloadPDF('weekly')">📄 Weekly PDF</button>
+    <button class="btn btn-light" onclick="downloadPDF('monthly')">📄 Monthly PDF</button>
+  </div>
+
   <button class="btn btn-light" style="margin-top:10px" onclick="logout()">Logout</button>
 </div>
 
-<div class="footer">Tilisi • Encouraging walks to burn calories • Hydration • Rest • Seek care when extreme</div>
+<div class="footer">Tilisi V3 • Till 6899566 • 3 Free Trials • 100/week 500/month • Encouraging walks, hydration, rest, seek care when extreme</div>
 </div>
 
 <script>
@@ -149,7 +179,7 @@ const adviceEl = document.getElementById('advice');
 const micBtn = document.getElementById('micBtn');
 const synth = window.speechSynthesis;
 let walkTimer = null;
-let walkData = {steps:0, miles:0, sec:0, targetMiles:1.5, targetSec:1200};
+let walkData = {steps:0, miles:0, sec:0};
 
 function speak(text){
   adviceEl.innerHTML = `<span class="badge">🔊 TILISI SAYS</span><br>${text}`;
@@ -159,11 +189,11 @@ function speak(text){
   u.lang='en-KE'; u.rate=0.92;
   synth.speak(u);
 }
-function show(el){document.getElementById(el).classList.remove('hidden')}
-function hide(el){document.getElementById(el).classList.add('hidden')}
+function show(id){document.getElementById(id).classList.remove('hidden')}
+function hide(id){document.getElementById(id).classList.add('hidden')}
 function hideAllInputs(){['bpBox','sugarBox','weightBox','walkBox'].forEach(hide)}
+function showSignup(){show('signupBox')}
 
-function showSignup(){ show('signupBox'); }
 async function register(){
   const name=document.getElementById('nameInput').value.trim();
   const pass=document.getElementById('passInput').value.trim();
@@ -176,23 +206,8 @@ async function register(){
     const data=await res.json();
     if(!res.ok) throw new Error(data.detail||'Failed');
     document.getElementById('authMsg').innerText=data.message;
-    show('mpesaBox');
-    speak(`Karibu ${name}. Please pay 299 via M-Pesa to activate.`);
-  }catch(e){ alert(e.message); }
-}
-
-async function payMpesa(){
-  const name=document.getElementById('nameInput').value.trim();
-  const phone=document.getElementById('phoneInput').value.trim()||'0712345678';
-  const btn=document.getElementById('mpesaBtn');
-  btn.innerText='Sending STK...'; btn.disabled=true;
-  try{
-    const res=await fetch('/mpesa/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone,amount:299})});
-    const data=await res.json();
-    btn.innerText='✅ Paid - Now Sign In';
-    speak('Payment received. Thank you. Please sign in now to start your wellness journey.');
-    document.getElementById('authMsg').innerText='Paid! Now tap Sign In';
-  }catch(e){ btn.innerText='Retry M-Pesa'; btn.disabled=false; alert('Pay failed'); }
+    speak(data.message);
+  }catch(e){alert(e.message)}
 }
 
 async function login(){
@@ -203,26 +218,59 @@ async function login(){
     const res=await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,password:pass})});
     const data=await res.json();
     if(data.status==='payment_required'){
-      show('mpesaBox'); document.getElementById('authMsg').innerText=data.message;
-      speak(data.message); return;
+      show('mpesaBox');
+      document.getElementById('authMsg').innerText=data.message;
+      speak(data.message);
+      return;
     }
     if(!res.ok) throw new Error(data.detail);
     currentUser=name;
-    document.getElementById('userNameBadge').innerText='• '+name;
+    document.getElementById('userNameBadge').innerText=name;
+    document.getElementById('accessBadge').innerText=data.access_msg||'Active';
     document.getElementById('authCard').classList.add('hidden');
     document.getElementById('appCard').classList.remove('hidden');
-    speak(data.message||`Welcome back ${name}. Would you like to assess your BP, sugar levels, or weight?`);
+    speak(data.message);
     statusEl.innerText=data.message;
-  }catch(e){ alert(e.message); }
+  }catch(e){alert(e.message)}
+}
+
+async function verifyMpesa(plan){
+  const name=document.getElementById('nameInput').value.trim();
+  const code=document.getElementById('mpesaCodeInput').value.trim().toUpperCase();
+  if(!name){alert('Enter name first');return;}
+  if(!code||code.length!=10){alert('Enter 10-char M-Pesa code e.g QGH7X8Y9Z0');return;}
+  const amount = plan==='monthly'?500:100;
+  document.getElementById('mpesaStatus').innerText='Verifying '+code+'...';
+  try{
+    const res=await fetch('/mpesa/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,mpesa_code:code,amount,plan})});
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.detail||'Failed');
+    document.getElementById('mpesaStatus').innerText=data.message;
+    speak(data.message);
+    // auto login after
+    setTimeout(()=>{document.getElementById('authMsg').innerText='Paid! Now Sign In';},500);
+  }catch(e){
+    document.getElementById('mpesaStatus').innerText=e.message;
+    alert(e.message);
+  }
 }
 
 function openInput(type){
   hideAllInputs();
   if(type==='bp') show('bpBox');
   if(type==='sugar') show('sugarBox');
-  if(type==='weight') show('weightBox');
+  if(type==='weight'){
+    show('weightBox');
+    // BMI preview
+    const w=parseFloat(document.getElementById('weight2').value)||0;
+    const h=165; // will use stored height later
+    if(w>0){
+      const bmi=w/((h/100)*(h/100));
+      document.getElementById('bmiPreview').innerText=`Preview BMI ~${bmi.toFixed(1)} at 165cm`;
+    }
+  }
   if(type==='walk') show('walkBox');
-  statusEl.innerText=`You chose ${type.toUpperCase()}. Please enter values.`;
+  statusEl.innerText=`You chose ${type.toUpperCase()}. Enter values in mmol/L for sugar.`;
   speak(`You chose ${type}. Please enter your ${type} details.`);
 }
 
@@ -234,58 +282,64 @@ async function submitReading(type){
     body.diastolic=parseInt(document.getElementById('dia').value)||0;
     body.pulse=parseInt(document.getElementById('pulse').value)||0;
   }
-  if(type==='sugar'){ body.glucose=parseFloat(document.getElementById('glucose').value)||0; }
-  if(type==='weight'){ body.weight=parseFloat(document.getElementById('weight2').value)||0; }
-
-  statusEl.innerText='Saving and analyzing...';
+  if(type==='sugar'){
+    body.glucose=parseFloat(document.getElementById('glucose').value)||0;
+    if(body.glucose>33.3){alert('Sugar max 33.3 mmol/L. Your meter shows HI >20. Enter actual e.g 22');}
+  }
+  if(type==='weight'){body.weight=parseFloat(document.getElementById('weight2').value)||0;}
+  statusEl.innerText='Saving & analyzing with calibrated thresholds...';
   try{
     const res=await fetch('/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const data=await res.json();
+    if(!res.ok) throw new Error(data.detail||'Payment required - Lipa Till 6899566');
     speak(data.advice);
-    statusEl.innerText='Saved. Advice below.';
-    if(type==='weight' && body.weight>=85){
-      setTimeout(()=>{ openInput('walk'); speak('Because your weight is a bit high, I strongly encourage a walk now to burn calories. Shall we start with 1 mile?'); },1500);
+    statusEl.innerText=`Saved (${data.status}) • ${data.access}`;
+    document.getElementById('accessBadge').innerText=data.access;
+    if(type==='weight' && data.status && data.status.includes('HIGH')){
+      setTimeout(()=>{openInput('walk'); speak('Your BMI is high. I strongly encourage walk now to burn calories. Shall we start 1 mile?');},1200);
     }
-  }catch(e){ speak('Could not save. Check connection.'); }
+  }catch(e){
+    if(e.message.includes('Till')){
+      show('mpesaBox');
+      document.getElementById('appCard').scrollTop=0;
+    }
+    speak(e.message);
+    statusEl.innerText=e.message;
+  }
 }
 
 async function getNutrition(){
   if(!currentUser){alert('Login first');return;}
   const day=new Date().toLocaleDateString('en-US',{weekday:'long'}).toLowerCase();
-  statusEl.innerText=`Getting nutrition for ${day} based on your last sugar level...`;
+  statusEl.innerText=`Getting nutrition for ${day} based on last sugar mmol/L...`;
   try{
     const res=await fetch(`/nutrition/${currentUser}/${day}`);
     const data=await res.json();
     const plan=data.plan;
-    const txt=`Day: ${data.day}. Sugar: ${data.sugar_level}. Breakfast: ${plan.breakfast}. Lunch: ${plan.lunch}. Supper: ${plan.supper}. ${plan.avoid}`;
+    const txt=`Day ${data.day}, Sugar ${data.sugar} mmol/L. Breakfast: ${plan.breakfast}. Lunch: ${plan.lunch}. Supper: ${plan.supper}. ${plan.avoid}`;
     speak(txt);
-  }catch(e){ speak('Nutrition not reachable'); }
+  }catch(e){speak('Nutrition not reachable')}
 }
 
-// WALK ENGINE - time + steps simulation (uses device motion if available)
 function startWalk(){
-  const targetMiles=parseFloat(document.getElementById('targetMiles').value)||1.5;
-  const targetMin=parseInt(document.getElementById('targetMin').value)||20;
+  const targetMiles=parseFloat(document.getElementById('targetMiles').value)||1.0;
+  const targetMin=parseInt(document.getElementById('targetMin').value)||15;
   walkData={steps:0,miles:0,sec:0,targetMiles,targetMin,targetSec:targetMin*60};
-  document.getElementById('walkStartBtn').innerText='⏸️ Walking... Tap to Finish Early';
+  document.getElementById('walkStartBtn').innerText='⏸️ Walking... Tap to Finish';
   document.getElementById('walkStartBtn').onclick=finishWalk;
-  statusEl.innerText=`Walk started: target ${targetMiles} miles in ${targetMin} min. Moving...`;
-  speak(`Perfect, ${targetMiles} miles it is. I will walk with you. Starting now. I will update every half mile.`);
-
+  statusEl.innerText=`Walk: target ${targetMiles} mi in ${targetMin} min`;
+  speak(`Perfect, ${targetMiles} miles it is. I walk with you. Starting now.`);
   if(walkTimer) clearInterval(walkTimer);
   walkTimer=setInterval(()=>{
     walkData.sec+=1;
-    // Estimate: 22 steps per 7 sec ~ 130 steps/min walking, + accelerometer boost
-    walkData.steps+= Math.floor(2 + Math.random()*2);
+    walkData.steps+=Math.floor(2+Math.random()*2);
     walkData.miles=walkData.steps*0.00053;
     const pct=Math.min(100,(walkData.miles/walkData.targetMiles)*100);
     document.getElementById('walkFill').style.width=pct+'%';
-    document.getElementById('walkStats').innerText=`🚶 ${walkData.miles.toFixed(2)} / ${targetMiles} mi • ${walkData.steps} steps • ${Math.floor(walkData.sec/60)}:${String(walkData.sec%60).padStart(2,'0')} • ~${Math.round(walkData.steps*0.04)} cal`;
-    if(Math.abs(walkData.miles-0.5)<0.02) speak('Half mile done! Beautiful pace, keep going!');
-    if(Math.abs(walkData.miles-1.0)<0.02) speak('One mile completed! You are doing amazing!');
-    if(walkData.sec>=walkData.targetSec || walkData.miles>=walkData.targetMiles){
-      finishWalk();
-    }
+    document.getElementById('walkStats').innerText=`🚶 ${walkData.miles.toFixed(2)}/${targetMiles} mi • ${walkData.steps} steps • ${Math.floor(walkData.sec/60)}:${String(walkData.sec%60).padStart(2,'0')} • ~${Math.round(walkData.steps*0.04)} cal`;
+    if(Math.abs(walkData.miles-0.5)<0.02) speak('Half mile done! Keep going!');
+    if(Math.abs(walkData.miles-1.0)<0.02) speak('One mile! Amazing!');
+    if(walkData.sec>=walkData.targetSec || walkData.miles>=walkData.targetMiles) finishWalk();
   },1000);
 }
 
@@ -299,30 +353,32 @@ async function finishWalk(){
     const data=await res.json();
     speak(data.celebration);
     statusEl.innerText=`✅ ${data.celebration}`;
-    document.getElementById('walkStats').innerText=`DONE: ${data.miles} mi • ${data.steps} steps • ${data.calories} kcal burned`;
-  }catch(e){
-    speak(`Hongera ${currentUser}! You completed ${walkData.miles.toFixed(1)} miles in ${Math.round(walkData.sec/60)} minutes!`);
-  }
+    document.getElementById('walkStats').innerText=`DONE ${data.miles} mi • ${data.steps} steps • ${data.calories} kcal`;
+  }catch(e){speak(`Hongera ${currentUser}! ${walkData.miles.toFixed(1)} miles done!`);}
+}
+
+function downloadPDF(period){
+  if(!currentUser){alert('Login first');return;}
+  window.open(`/report/pdf/${currentUser}/${period}`,'_blank');
 }
 
 function startListen(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert('Use Chrome Android for voice. Buttons work fine.');return;}
+  if(!SR){alert('Voice best in Chrome Android. Buttons work.');return;}
   const rec=new SR(); rec.lang='en-KE'; rec.interimResults=false;
-  rec.onstart=()=>{micBtn.classList.add('listening'); statusEl.innerText='🎧 Listening... Speak now';}
+  rec.onstart=()=>{micBtn.classList.add('listening'); statusEl.innerText='🎧 Listening...';}
   rec.onend=()=>micBtn.classList.remove('listening');
   rec.onresult=(e)=>{
     const t=e.results[0][0].transcript.toLowerCase();
     statusEl.innerText=`You said: "${t}"`;
-    if(t.includes('b p')||t.includes('pressure')||t.includes('bp')) openInput('bp');
-    else if(t.includes('sugar')||t.includes('glucose')||t.includes('balance')) openInput('sugar');
-    else if(t.includes('weight')) openInput('weight');
+    if(t.includes('pressure')||t.includes('bp')) openInput('bp');
+    else if(t.includes('sugar')||t.includes('glucose')) openInput('sugar');
+    else if(t.includes('weight')||t.includes('bmi')) openInput('weight');
     else if(t.includes('walk')||t.includes('jog')) openInput('walk');
-    else if(t.includes('nutrition')||t.includes('food')||t.includes('eat')) getNutrition();
-    else if(t.includes('hello')||t.includes('jambo')) speak('Jambo! Would you like to assess your BP, sugar levels, or weight today?');
-    else speak(`I heard ${t}. Please say Assess BP, Check Sugar, Check Weight, Walk, or My Nutrition.`);
+    else if(t.includes('nutrition')||t.includes('food')) getNutrition();
+    else speak(`Heard ${t}. Say BP, Sugar, Weight, Walk, Nutrition`);
   };
-  rec.onerror=()=>{micBtn.classList.remove('listening'); statusEl.innerText='Could not hear. Try again.';}
+  rec.onerror=()=>{micBtn.classList.remove('listening'); statusEl.innerText='Could not hear';}
   rec.start();
 }
 
@@ -333,7 +389,7 @@ function logout(){
   hideAllInputs();
   document.getElementById('authMsg').innerText='Logged out. Karibu tena!';
 }
-window.onload=()=>{ setTimeout(()=>{ speak('Welcome to Tilisi Wellness. Sign up with your name, pay via M-Pesa, then choose to assess BP, sugar, or weight.'); },800); };
+window.onload=()=>{setTimeout(()=>{speak('Welcome to Tilisi V3. Sign up with name, get 3 free trials, then pay Till 6899566. Sugar is in mmol/L 1 to 33.');},700);};
 </script>
 </body>
- </html>
+</html>
