@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tilisi Wellness Coach</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#e8f5e9 0%,#fffde7 100%);min-height:100vh;padding:16px;color:#2e2e2e}
+  .container{max-width:430px;margin:0 auto}
+  header{text-align:center;padding:20px 0}
+  header h1{color:#2e7d32;font-size:26px;font-weight:800}
+  header p{color:#6d6d6d;margin-top:4px}
+  .card{background:#fff;border-radius:24px;padding:20px;box-shadow:0 12px 32px rgba(0,0,0,.08);margin-bottom:16px}
+  .inputs{display:flex;gap:8px;margin-bottom:12px}
+  .inputs input{flex:1;padding:12px 14px;border:1.5px solid #e0e0e0;border-radius:12px;font-size:15px;outline:none}
+  .inputs input:focus{border-color:#2e7d32}
+  #status{background:#f1f8e9;border-radius:12px;padding:12px;font-size:14px;color:#33691e;min-height:46px;display:flex;align-items:center;justify-content:center;text-align:center;margin-bottom:14px}
+  .mic-wrap{display:flex;justify-content:center;margin:10px 0}
+  .mic{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#2e7d32,#66bb6a);color:#fff;border:none;font-size:38px;cursor:pointer;box-shadow:0 8px 20px rgba(46,125,50,.35);transition:.2s}
+  .mic:active{transform:scale(.92)}
+  .mic.listening{animation:pulse 1.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,125,50,.7)}70%{box-shadow:0 0 0 18px rgba(46,125,50,0)}100%{box-shadow:0 0 0 0 rgba(46,125,50,0)}}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn{padding:14px 10px;border-radius:14px;border:none;font-weight:700;font-size:14px;cursor:pointer;transition:.15s}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:#2e7d32;color:#fff}
+  .btn-light{background:#f1f8e9;color:#2e7d32;border:1px solid #c5e1a5}
+  .btn-full{grid-column:1 / -1}
+  #advice{margin-top:14px;background:#fffde7;border-left:4px solid #f9a825;padding:14px;border-radius:0 12px 12px 0;font-size:14.5px;line-height:1.5}
+  .footer{text-align:center;font-size:12px;color:#9e9e9e;margin-top:16px}
+  .badge{display:inline-block;background:#e8f5e9;color:#2e7d32;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🌿 Tilisi Wellness Coach</h1>
+    <p>Your mindful audio companion</p>
+  </header>
+
+  <div class="card">
+    <div class="inputs">
+      <input id="phone" type="tel" placeholder="Phone" value="0712345678">
+      <input id="weight" type="number" placeholder="Weight kg" value="78">
+    </div>
+
+    <div id="status">Tap 🎤 and say: Check Weight, Check Pulse, Check Balance, Walk with me, My Nutrition</div>
+
+    <div class="mic-wrap">
+      <button id="micBtn" class="mic" onclick="startListen()">🎤</button>
+    </div>
+
+    <div class="grid">
+      <button class="btn btn-primary" onclick="quick('weight')">⚖️ Weight</button>
+      <button class="btn btn-primary" onclick="quick('pulse')">💓 Pulse</button>
+      <button class="btn btn-primary" onclick="quick('balance')">🩸 Balance</button>
+      <button class="btn btn-light" onclick="quick('walk')">🚶 Walk</button>
+      <button class="btn btn-light btn-full" onclick="getNutrition()">🥗 My Nutrition Today</button>
+    </div>
+
+    <div id="advice">
+      <span class="badge">WELCOME</span><br>
+      Welcome to Tilisi Wellness Coaching services. How are you feeling today? Select a feature or tap the mic to speak.
+    </div>
+  </div>
+
+  <div class="footer">Tilisi • Walk • Breathe • Balance • Made in Kenya 🇰🇪</div>
+</div>
+
+<script>
+const statusEl = document.getElementById('status');
+const adviceEl = document.getElementById('advice');
+const micBtn = document.getElementById('micBtn');
+const synth = window.speechSynthesis;
+
+function speak(text) {
+  adviceEl.innerHTML = `<span class="badge">🔊 TILISI SAYS</span><br>${text}`;
+  if (!synth) return;
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-KE';
+  u.rate = 0.92;
+  u.pitch = 1;
+  synth.speak(u);
+}
+
+async function quick(type) {
+  const phone = document.getElementById('phone').value || '0712345678';
+  const weight = parseFloat(document.getElementById('weight').value) || 78;
+  let body = { user_phone: phone, type: type, weight: weight };
+
+  if (type === 'pulse') {
+    const sys = prompt('Enter systolic (top number) e.g 118:', '118');
+    if (sys === null) return;
+    body.systolic = parseInt(sys);
+    body.diastolic = 78;
+  }
+  if (type === 'balance') {
+    const glu = prompt('Enter blood sugar e.g 95:', '95');
+    if (glu === null) return;
+    body.glucose = parseFloat(glu);
+  }
+  if (type === 'walk') {
+    const m = prompt('How many miles today? 1, 2 or 3:', '2');
+    if (m === null) return;
+    body.target_miles = parseFloat(m);
+  }
+
+  statusEl.innerText = `Processing ${type}...`;
+  try {
+    const res = await fetch('/reading', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    speak(data.audio_advice || 'Saved successfully');
+    if (type === 'walk') startWalk(body.target_miles);
+  } catch (e) {
+    speak('Could not connect to Tilisi server. Make sure backend is running.');
+  }
+}
+
+async function getNutrition() {
+  const day = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  statusEl.innerText = `Getting nutrition for ${day}...`;
+  try {
+    const res = await fetch(`/nutrition/${day}`);
+    const data = await res.json();
+    speak(`${day}: ${data.plan} Avoid: ${data.avoid}`);
+  } catch {
+    speak('Nutrition service not reachable');
+  }
+}
+
+function startWalk(targetMiles = 2) {
+  let steps = 0;
+  let miles = 0;
+  statusEl.innerText = `Walking... 0.0 / ${targetMiles} miles`;
+  const interval = setInterval(() => {
+    steps += 22;
+    miles = (steps * 0.00053);
+    statusEl.innerText = `🚶 Walking... ${miles.toFixed(2)} / ${targetMiles} mi • ${steps} steps`;
+    if (miles >= 0.5 && miles < 0.55) speak('Half mile done! Beautiful pace, keep going!');
+    if (miles >= 1 && miles < 1.05) speak('One mile! You are doing amazing!');
+    if (miles >= targetMiles) {
+      clearInterval(interval);
+      const cal = Math.round(steps * 0.04);
+      speak(`Hongera! You did it! ${miles.toFixed(1)} miles completed, ${steps} steps, ${cal} calories! You walked more than yesterday! I am proud of you!`);
+      fetch(`/walk/complete?phone=0712345678&miles=${miles.toFixed(1)}&steps=${steps}&duration=25`, { method: 'POST' });
+      statusEl.innerText = `✅ Done: ${miles.toFixed(1)} mi • ${steps} steps • ${cal} kcal`;
+    }
+  }, 700);
+}
+
+function startListen() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    alert('Voice works best in Chrome on Android. Use buttons for now.');
+    return;
+  }
+  const rec = new SR();
+  rec.lang = 'en-KE';
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+
+  rec.onstart = () => {
+    micBtn.classList.add('listening');
+    statusEl.innerText = '🎧 Listening... Speak now';
+  };
+  rec.onend = () => micBtn.classList.remove('listening');
+
+  rec.onresult = (e) => {
+    const t = e.results[0][0].transcript.toLowerCase();
+    statusEl.innerText = `You said: "${t}"`;
+    if (t.includes('weight')) quick('weight');
+    else if (t.includes('pulse') || t.includes('pressure')) quick('pulse');
+    else if (t.includes('balance') || t.includes('sugar') || t.includes('glucose')) quick('balance');
+    else if (t.includes('walk')) quick('walk');
+    else if (t.includes('nutrition') || t.includes('food') || t.includes('diet') || t.includes('eat')) getNutrition();
+    else if (t.includes('hello') || t.includes('jambo')) speak('Jambo! Welcome to Tilisi Wellness Coach. Say Check Weight, Check Pulse, Check Balance, Walk with me, or My Nutrition.');
+    else speak(`I heard "${t}". Try saying: Check Weight, Check Pulse, Check Balance, Walk with me, or My Nutrition.`);
+  };
+
+  rec.onerror = () => {
+    micBtn.classList.remove('listening');
+    statusEl.innerText = 'Could not hear. Try again.';
+  };
+  rec.start();
+}
+
+// Welcome speech on load
+window.onload = () => {
+  setTimeout(() => {
+    speak('Welcome to Tilisi Wellness Coaching services. How are you feeling today? Tap mic and say Check Weight, Pulse, Balance, Walk with me, or My Nutrition.');
+  }, 600);
+};
+</script>
+</body>
+</html>
