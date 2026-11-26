@@ -437,6 +437,13 @@ def report_pdf(name: str, period: str):
     if not os.path.exists(pdf_path):
         pdf_path=pdf_path.replace(".pdf",".txt")
     return FileResponse(pdf_path,filename=os.path.basename(pdf_path),media_type="application/pdf" if pdf_path.endswith("pdf") else "text/plain")
+    @app.get("/manifest.json")
+def get_manifest():
+    return FileResponse("manifest.json")
+
+@app.get("/sw.js")
+def get_sw():
+    return FileResponse("sw.js")
 
 if __name__=="__main__":
     import uvicorn
