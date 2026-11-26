@@ -96,14 +96,12 @@ def check_access(user_row):
     if trial < 3: return True, f"Free trial {trial+1}/3"
     return False, "Payment required - Till 6899566"
 
-# HOME
 @app.get("/", response_class=HTMLResponse)
 def home():
     if os.path.exists("index.html"):
         with open("index.html","r",encoding="utf-8") as f: return f.read()
     return "<h3>Tilisi V3 Live - Go to /docs</h3>"
 
-# === PWA ROUTES - FIXES YOUR ERROR ===
 @app.get("/manifest.json")
 def manifest():
     if os.path.exists("manifest.json"):
@@ -207,29 +205,57 @@ def progress(name: str):
 
 @app.get("/report/pdf/{name}/{period}")
 def report_pdf(name: str, period: str):
-    key=name.strip().lower(); conn=get_db(); cur=conn.cursor()
-    cur.execute("SELECT * FROM users WHERE name_key=?",(key,)); user=cur.fetchone()
-    if not user: conn.close(); raise HTTPException(404,"User not found")
+    key=name.strip().lower()
+    conn=get_db(); cur=conn.cursor()
+    cur.execute("SELECT * FROM users WHERE name_key=?",(key,))
+    user=cur.fetchone()
+    if not user:
+        conn.close()
+        raise HTTPException(404,"User not found")
     now=datetime.datetime.now()
     since=now-timedelta(days=1) if period=="daily" else now-timedelta(days=7) if period=="weekly" else now-timedelta(days=30)
-    cur.execute("SELECT * FROM readings WHERE user_key=? AND created_at>=? ORDER BY created_at ASC",(key,since.isoformat())); readings=[dict(r) for r in cur.fetchall()]; conn.close()
+    cur.execute("SELECT * FROM readings WHERE user_key=? AND created_at>=? ORDER BY created_at ASC",(key,since.isoformat()))
+    readings=[dict(r) for r in cur.fetchall()]
+    conn.close()
+    
+    os.makedirs("static", exist_ok=True)
     pdf_path=f"static/Tilisi_Report_{name}_{period}_{now.date()}.pdf"
-    try:
-        from reportlab.lib.pagesizes import A4
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.units import mm
-        c=canvas.Canvas(pdf_path,pagesize=A4)
-        c.setFont("Helvetica-Bold",16); c.drawString(20*mm,280*mm,f"Tilisi Wellness Report - {name}")
-        c.setFont("Helvetica",10); c.drawString(20*mm,273*mm,f"Period: {period.upper()} | {since.date()} to {now.date()} | Till 6899566")
-        y=260*mm; c.setFont("Helvetica",8)
-        for r in readings[-60:]:
-            if y<20*mm: c.showPage(); y=280*mm
-            vals=f"{r['systolic']}/{r['diastolic']}" if r['type']=="bp" else f"{r['glucose']} mmol/L" if r['type']=="sugar" else f"{r['weight']}KG" if r['type']=="weight" else f"{r['miles']}mi"
-            c.drawString(15*mm,y,f"{r['created_at'][:16]} | {r['type']} | {vals} | {(r['advice'] or '')[:90]}"); y-=5*mm
-        c.showPage(); c.save()
-    except Exception as e:
-        with open(pdf_path, "w") as f: f.write(f"Tilisi Report {name} {period}\n"+json.dumps(readings,indent=2))
-    return FileResponse(pdf_path, filename=os.path.basename(pdf_path))
+    
+    # FORCE REAL PDF - no txt fallback
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.units import mm
+    c=canvas.Canvas(pdf_path,pagesize=A4)
+    c.setFont("Helvetica-Bold",16)
+    c.drawString(20*mm,280*mm,f"Tilisi Wellness Report - {name}")
+    c.setFont("Helvetica",10)
+    c.drawString(20*mm,273*mm,f"Period: {period.upper()} | {since.date()} to {now.date()} | Till 6899566")
+    c.drawString(20*mm,268*mm,f"Weight: {user['weight']}KG Height: {user['height']}cm Phone: {user['phone']}")
+    c.drawString(20*mm,263*mm,f"Generated: {now.strftime('%Y-%m-%d %H:%M')}")
+    y=250*mm
+    c.setFont("Helvetica-Bold",10)
+    c.drawString(12*mm,y,"Date Time | Type | Value | Advice")
+    y-=6*mm
+    c.setFont("Helvetica",8)
+    if not readings:
+        c.drawString(12*mm,y,"No readings in this period.")
+        y-=5*mm
+    else:
+        for r in readings[-50:]:
+            if y<20*mm:
+                c.showPage()
+                y=280*mm
+                c.setFont("Helvetica",8)
+            vals=f"{r['systolic']}/{r['diastolic']} P{r['pulse']}" if r['type']=="bp" else f"{r['glucose']} mmol/L" if r['type']=="sugar" else f"{r['weight']}KG" if r['type']=="weight" else f"{r['miles']}mi {r['steps']} steps"
+            advice=(r['advice'] or "").replace("\n"," ")[:70]
+            line=f"{r['created_at'][:16]} | {r['type']:6} | {vals:15} | {advice}"
+            c.drawString(10*mm,y,line[:115])
+            y-=4.8*mm
+    c.setFont("Helvetica-Bold",7)
+    c.drawString(10*mm,12*mm,"Calibrated: BP <90/60 LOW, 90-119/60-79 NORMAL, 120-139/80-89 HIGH-1, 140-180/90-120 HIGH-2, >180 CRISIS | Sugar <3.0 VERY LOW, 3.0-3.8 LOW, 3.9-5.5 NORMAL, 5.6-6.9 PRE-HIGH, 7-11 HIGH, >11 VERY HIGH, >20 EMERGENCY HI")
+    c.showPage()
+    c.save()
+    return FileResponse(pdf_path, filename=os.path.basename(pdf_path), media_type="application/pdf")
 
 if __name__=="__main__":
     import uvicorn
