@@ -37,7 +37,7 @@
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .grid-3{grid-template-columns:1fr 1fr 1fr}
   .hidden{display:none!important}
-  #advice{margin-top:10px;background:#fffde7;border-left:4px solid #f9a825;padding:12px;border-radius:0 12px 12px 0;font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+  #advice{margin-top:10px;background:#fffde7;border-left:4px solid #f9a825;padding:14px;border-radius:0 12px 12px 0;font-size:13.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
   .badge{display:inline-block;background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800;margin-bottom:6px}
   .divider{height:1px;background:#eee;margin:10px 0}
   .small{font-size:11px;color:#777;text-align:center;margin-top:6px;line-height:1.3}
@@ -57,7 +57,6 @@
   <p>Till 6899566 • Walk • Breathe • Balance • Kenya 🇰🇪</p>
 </header>
 
-<!-- AUTH CARD -->
 <div class="card" id="authCard">
   <div class="badge">ACCOUNT - NAME BASED</div>
   <h3 style="margin:6px 0 8px;font-size:16px">Sign in with your Name</h3>
@@ -85,10 +84,10 @@
       <div class="badge">LIPA NA M-PESA</div>
       <div style="font-size:13px;font-weight:700">Till Number: 6899566 (Buy Goods)</div>
       <div class="small" style="text-align:left;margin:6px 0">
-        1. M-Pesa → Lipa na M-Pesa → Buy Goods → <b>6899566</b><br>
-        2. Amount: <b>100</b> Weekly or <b>500</b> Monthly<br>
-        3. Enter PIN → Copy M-Pesa Code e.g <b>QGH7X8Y9Z0</b><br>
-        4. Paste code below to verify
+                1. M-Pesa → Lipa na M-Pesa → Buy Goods → <b>6899566</b><br>
+                2. Amount: <b>100</b> Weekly or <b>500</b> Monthly<br>
+                3. Enter PIN → Copy M-Pesa Code e.g <b>QGH7X8Y9Z0</b><br>
+                4. Paste code below to verify
       </div>
       <input id="mpesaCodeInput" placeholder="Enter M-Pesa Code e.g QGH7X8Y9Z0" autocapitalize="characters" style="text-transform:uppercase">
       <div class="row">
@@ -100,12 +99,11 @@
   </div>
 
   <div class="calib">
-    <b>Calibrated:</b> Sugar mmol/L: &lt;3.0 Very Low (honey, NO insulin), 3.0-3.8 Low, 3.9-5.5 Normal, 5.6-7.7 Pre-High, 11.1+ Very High, &gt;20 Emergency HI.<br>
-    BP: &lt;90/60 Low, 90-119/60-79 Normal, 120-139/80-89 High-1, 140-180/90-120 High-2, &gt;180 Crisis
+    <b>Calibrated:</b> Sugar mmol/L: &lt;3.0 Very Low (honey, NO insulin), 3.0-3.8 Low, 3.9-5.5 Normal, 5.6-7.7 Pre-High, 7.8-11.0 High, 11.1-20 Very High, &gt;20 Emergency HI (1-33 range).<br>
+    BP: &lt;90/60 Low, 90-119/60-79 Normal, 120-139/80-89 High-1, 140-179/90-119 High-2, ≥180/120 Crisis
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div class="card hidden" id="appCard">
   <div class="badge">WELCOME <span id="userNameBadge"></span> • <span id="accessBadge"></span></div>
   <div id="status">Karibu! What would you like to do? Assess BP, Sugar (mmol/L), or Weight?</div>
@@ -182,12 +180,109 @@ const micBtn = document.getElementById('micBtn');
 const synth = window.speechSynthesis;
 let walkTimer = null;
 let walkData = {steps:0, miles:0, sec:0};
+let lastHeight = 165;
+let lastWeight = 70;
+
+// ===== WARM DETAILED ADVISOR - ENHANCED =====
+function getWarmAdvice({type, sys, dia, pulse, glucose, weight, height, steps}) {
+  let lines = [];
+  const name = currentUser || "friend";
+
+  // BP DETAILED
+  if(type==='bp' && sys && dia){
+    if(dia >= sys || dia > 150 || sys > 250){
+      return `Hi ${name}, looks like the numbers got mixed. You entered ${sys} over ${dia}. Diastolic should be smaller than systolic, and max 150. Systolic e.g 120, Diastolic e.g 80, Pulse e.g 72. Please re-enter.`;
+    }
+    if(sys >= 180 || dia >= 120){
+      lines.push(`🚨 BP ${sys}/${dia} - CRISIS RANGE (≥180/120). What it means: Very high, needs quick attention.`);
+      lines.push(`Possible causes: Missed BP medicine, high salt yesterday, severe stress/pain, low sleep, dehydration.`);
+      lines.push(`What to do NOW: 1) REST - Stop activity, sit quietly 5 mins feet flat. 2) BREATHE - Slow deep breaths. 3) HYDRATE small sip of water. 4) NO hard exercise now. 5) RECHECK after 10 mins. If chest pain, short breath, confusion, slurred speech, or stays ≥180/120, seek emergency care immediately. This is general info, not a diagnosis.`);
+    } else if(sys >= 140 || dia >= 90){
+      lines.push(`⚠️ BP ${sys}/${dia} - HIGH (Stage 2). What it means: Above ideal range (ideal <120/80). Your heart is working harder today.`);
+      lines.push(`Possible causes: Salty food, low water, stress, poor sleep last night, weight gain, low walk, caffeine.`);
+      lines.push(`What to do NOW & moving forward: 1) REST 5-10 mins then recheck. 2) HYDRATE - drink plain water through day. 3) EXERCISE - No hard jog today if feeling unwell. Gentle walk 15-20 mins later if you feel okay. 4) NUTRITION - Low salt today, more vegetables, avoid fried. 5) SLEEP 7-8 hrs tonight. 6) TRACK - Check again tomorrow morning. If it stays ≥140/90 many days, please visit your clinic. You are doing well by tracking.`);
+    } else if(sys >= 120 || dia >= 80){
+      lines.push(`👀 BP ${sys}/${dia} - ELEVATED / HIGH-1. What it means: Slightly above optimal, common and manageable.`);
+      lines.push(`Possible causes: Stress, coffee, little sleep.`);
+      lines.push(`What to do: 1) Walk 20-30 mins today. 2) Hydrate. 3) Reduce salt. 4) Deep breaths. Keep tracking.`);
+    } else if(sys < 90 || dia < 60){
+      lines.push(`🔵 BP ${sys}/${dia} - LOW. What it means: On lower side. You may feel dizzy if standing quickly.`);
+      lines.push(`Possible causes: Low water, long gap without food, heat.`);
+      lines.push(`What to do: 1) Hydrate. 2) Sit if dizzy, stand slowly. 3) Eat light balanced meal. 4) If frequent dizziness/fatigue, see clinician.`);
+    } else {
+      lines.push(`✅ BP ${sys}/${dia} - GOOD, within healthy range (90-119/60-79). Keep your walks, water, low salt. Great job!`);
+    }
+    if(pulse){
+      if(pulse > 100) lines.push(`Pulse ${pulse} bpm - A bit fast. Possible: stress, caffeine, dehydration, recent activity. Rest, water, recheck. If persistent with symptoms, mention to doctor.`);
+      else if(pulse < 60) lines.push(`Pulse ${pulse} bpm - A bit slow. If you are athletic can be okay. If dizzy/fatigued, discuss with clinician.`);
+      else lines.push(`Pulse ${pulse} bpm - Normal rhythm range. Good.`);
+    }
+  }
+
+  // SUGAR DETAILED - 1-33 mmol/L stays
+  if(type==='sugar' && !isNaN(glucose)){
+    if(glucose < 1 || glucose > 33){
+      return `Hi ${name}, sugar ${glucose} mmol/L is outside 1-33 range. Your meter shows LO <1 or HI >33 (usually >20-33). Enter actual number e.g 5.5. If meter shows HI, seek care quickly.`;
+    }
+    if(glucose < 3.0){
+      lines.push(`🔴 SUGAR ${glucose} mmol/L - VERY LOW (<3.0). What it means: Dangerously low, brain needs sugar now.`);
+      lines.push(`Possible causes: Missed meal, too much activity, diabetes medication effect.`);
+      lines.push(`What to do NOW - ENERGIZE: 1) Take honey/sugar/juice immediately - about 1 tablespoon honey or 1/2 cup juice. 2) NO insulin now. 3) REST, sit safely. 4) RECHECK after 15 mins. 5) If still <3.0 or confused/sweaty/shaky, seek help and repeat honey. Once normal, eat balanced meal. Discuss pattern with clinician.`);
+    } else if(glucose < 3.9){
+      lines.push(`🟡 SUGAR ${glucose} mmol/L - LOW (3.0-3.8). What it means: Below normal (normal 3.9-5.5 fasting).`);
+      lines.push(`Possible causes: Long gap without food, activity.`);
+      lines.push(`What to do: 1) ENERGIZE small fast sugar + snack. 2) Rest 15 mins. 3) Hydrate water. 4) Recheck.`);
+    } else if(glucose <= 5.5){
+      lines.push(`✅ SUGAR ${glucose} mmol/L - NORMAL (3.9-5.5). What it means: Perfect fasting range. Your body is balanced.`);
+      lines.push(`What to do: Keep balanced meals, walk daily, hydrate. Excellent!`);
+    } else if(glucose <= 7.7){
+      lines.push(`👀 SUGAR ${glucose} mmol/L - PRE-HIGH (5.6-7.7). What it means: Slightly above normal, often after meal.`);
+      lines.push(`Possible causes: Recent meal with carbs, stress.`);
+      lines.push(`What to do: 1) WALK gentle 15 mins if feeling well. 2) HYDRATE water. 3) Next meal - more vegetables, less sugary drinks. Recheck in 2 hrs.`);
+    } else if(glucose <= 11.0){
+      lines.push(`🟠 SUGAR ${glucose} mmol/L - HIGH (7.8-11.0). What it means: Above target.`);
+      lines.push(`Possible causes: High carb meal, low activity, stress.`);
+      lines.push(`What to do: 1) HYDRATE water. 2) WALK light 20 mins if well. 3) Avoid sugary foods today. 4) Check Nutrition by Sugar for today's plan. Recheck later. If frequent, see clinician.`);
+    } else if(glucose <= 20){
+      lines.push(`🔴 SUGAR ${glucose} mmol/L - VERY HIGH (11.1-20). What it means: Very high, needs attention.`);
+      lines.push(`Possible causes: Large sugary meal, missed medication, illness, low water.`);
+      lines.push(`What to do: 1) HYDRATE plain water (no soda). 2) NO sugary foods. 3) REST - no hard exercise if feeling sick, vomiting, belly pain - seek care. 4) RECHECK in 1-2 hrs. 5) If repeats, contact clinician today.`);
+    } else {
+      lines.push(`🚨 SUGAR ${glucose} mmol/L - EMERGENCY HI (>20). What it means: Meter shows HI, extremely high.`);
+      lines.push(`What to do: HYDRATE water, DO NOT exercise hard, seek urgent care now, especially if thirsty, frequent urination, confusion, vomiting. This is general info only.`);
+    }
+  }
+
+  // WEIGHT + BMI
+  if(type==='weight' && weight){
+    let h = (height||lastHeight)/100;
+    let bmi = weight/(h*h);
+    lastWeight = weight;
+    if(bmi < 18.5){
+      lines.push(`⚖️ WEIGHT ${weight}kg BMI ${bmi.toFixed(1)} - LOW. What it means: Below healthy weight. Possible causes: low intake. What to do: Balanced nutrition, small frequent meals, strength walks, discuss with clinician if losing weight unintentionally.`);
+    } else if(bmi < 25){
+      lines.push(`✅ WEIGHT ${weight}kg BMI ${bmi.toFixed(1)} - HEALTHY (18.5-24.9). Great! Keep walks and balanced diet.`);
+    } else if(bmi < 30){
+      lines.push(`👀 WEIGHT ${weight}kg BMI ${bmi.toFixed(1)} - ABOVE IDEAL (25-29.9). What it means: Slight extra weight can raise BP and sugar. What to do: 1) WALK 30 mins daily. 2) HYDRATE water over soda. 3) NUTRITION smaller portions, more veg. You can improve steadily.`);
+    } else {
+      lines.push(`⚠️ WEIGHT ${weight}kg BMI ${bmi.toFixed(1)} - HIGH (≥30). What it means: Higher risk for BP/sugar. What to do: 1) WALK daily as app encourages - start 1 mile. 2) NUTRITION by Sugar plan. 3) REST good sleep helps weight. 4) Track weekly. Small steps matter. Consider clinician guidance.`);
+    }
+  }
+
+  // WALK
+  if(type==='walk'){
+    lines.push(`🚶 WALK ENGINE: You are building heart health. What it means: Walking helps BP and sugar generally. What to do: Start with target you set, breathe, hydrate small sips, stop if dizzy/chest pain. Celebrate each mile!`);
+  }
+
+  lines.push(`\n💛 Tilisi cares: This advice is educational only, warm guidance to help you understand your numbers. It is not medical diagnosis. For personal treatment, please see your doctor. Keep tracking - you are doing great, ${name}!`);
+  return lines.join("\n\n");
+}
 
 function speak(text){
   adviceEl.innerHTML = `<span class="badge">🔊 TILISI SAYS</span><br>${text}`;
   if(!synth) return;
   synth.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+  const u = new SpeechSynthesisUtterance(text.substring(0,350));
   u.lang='en-KE'; u.rate=0.92;
   synth.speak(u);
 }
@@ -202,6 +297,7 @@ async function register(){
   const phone=document.getElementById('phoneInput').value.trim()||'0712345678';
   const weight=parseFloat(document.getElementById('weightInput').value)||70;
   const height=parseFloat(document.getElementById('heightInput').value)||165;
+  lastHeight=height; lastWeight=weight;
   if(name.length<2||pass.length<4){alert('Enter name and password 4+ chars');return;}
   try{
     const res=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone,password:pass,weight,height})});
@@ -249,7 +345,6 @@ async function verifyMpesa(plan){
     if(!res.ok) throw new Error(data.detail||'Failed');
     document.getElementById('mpesaStatus').innerText=data.message;
     speak(data.message);
-    // auto login after
     setTimeout(()=>{document.getElementById('authMsg').innerText='Paid! Now Sign In';},500);
   }catch(e){
     document.getElementById('mpesaStatus').innerText=e.message;
@@ -263,38 +358,54 @@ function openInput(type){
   if(type==='sugar') show('sugarBox');
   if(type==='weight'){
     show('weightBox');
-    // BMI preview
-    const w=parseFloat(document.getElementById('weight2').value)||0;
-    const h=165; // will use stored height later
+    const w=parseFloat(document.getElementById('weight2').value)||lastWeight;
     if(w>0){
-      const bmi=w/((h/100)*(h/100));
-      document.getElementById('bmiPreview').innerText=`Preview BMI ~${bmi.toFixed(1)} at 165cm`;
+      const bmi=w/((lastHeight/100)*(lastHeight/100));
+      document.getElementById('bmiPreview').innerText=`Preview BMI ~${bmi.toFixed(1)} at ${lastHeight}cm`;
     }
   }
   if(type==='walk') show('walkBox');
-  statusEl.innerText=`You chose ${type.toUpperCase()}. Enter values in mmol/L for sugar.`;
+  statusEl.innerText=`You chose ${type.toUpperCase()}. Enter values - Sugar 1-33 mmol/L only.`;
   speak(`You chose ${type}. Please enter your ${type} details.`);
 }
 
 async function submitReading(type){
   if(!currentUser){alert('Login first');return;}
   let body={user_name:currentUser,type};
+  let localAdvice="";
   if(type==='bp'){
     body.systolic=parseInt(document.getElementById('sys').value)||0;
     body.diastolic=parseInt(document.getElementById('dia').value)||0;
     body.pulse=parseInt(document.getElementById('pulse').value)||0;
+    if(!body.systolic || !body.diastolic){alert('Enter systolic and diastolic');return;}
+    localAdvice = getWarmAdvice({type:'bp', sys:body.systolic, dia:body.diastolic, pulse:body.pulse});
   }
   if(type==='sugar'){
     body.glucose=parseFloat(document.getElementById('glucose').value)||0;
-    if(body.glucose>33.3){alert('Sugar max 33.3 mmol/L. Your meter shows HI >20. Enter actual e.g 22');}
+    if(body.glucose<=0){alert('Enter sugar 1-33 mmol/L');return;}
+    if(body.glucose>33.3){alert('Sugar max 33.3 mmol/L. Meter shows HI >20. Enter actual e.g 22'); return;}
+    localAdvice = getWarmAdvice({type:'sugar', glucose:body.glucose});
   }
-  if(type==='weight'){body.weight=parseFloat(document.getElementById('weight2').value)||0;}
-  statusEl.innerText='Saving & analyzing with calibrated thresholds...';
+  if(type==='weight'){
+    body.weight=parseFloat(document.getElementById('weight2').value)||0;
+    if(!body.weight){alert('Enter weight');return;}
+    localAdvice = getWarmAdvice({type:'weight', weight:body.weight, height:lastHeight});
+  }
+
+  // Show warm detailed advice INSTANTLY
+  if(localAdvice){
+    speak(localAdvice);
+    statusEl.innerText='Analyzing with warm detailed advisor...';
+  }
+
   try{
     const res=await fetch('/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const data=await res.json();
     if(!res.ok) throw new Error(data.detail||'Payment required - Lipa Till 6899566');
-    speak(data.advice);
+    // Combine backend advice + our detailed
+    let finalAdvice = localAdvice + "\n\n---\nBackend: " + (data.advice||'');
+    if(type==='sugar') finalAdvice = localAdvice; // prefer our detailed for sugar
+    if(localAdvice) speak(localAdvice); else speak(data.advice);
     statusEl.innerText=`Saved (${data.status}) • ${data.access}`;
     document.getElementById('accessBadge').innerText=data.access;
     if(type==='weight' && data.status && data.status.includes('HIGH')){
@@ -303,9 +414,8 @@ async function submitReading(type){
   }catch(e){
     if(e.message.includes('Till')){
       show('mpesaBox');
-      document.getElementById('appCard').scrollTop=0;
     }
-    speak(e.message);
+    if(!localAdvice) speak(e.message);
     statusEl.innerText=e.message;
   }
 }
@@ -318,7 +428,10 @@ async function getNutrition(){
     const res=await fetch(`/nutrition/${currentUser}/${day}`);
     const data=await res.json();
     const plan=data.plan;
-    const txt=`Day ${data.day}, Sugar ${data.sugar} mmol/L. Breakfast: ${plan.breakfast}. Lunch: ${plan.lunch}. Supper: ${plan.supper}. ${plan.avoid}`;
+    const sugar = data.sugar;
+    // Enhanced nutrition advice based on sugar 1-33
+    let extra = getWarmAdvice({type:'sugar', glucose:parseFloat(sugar)||5.5});
+    const txt=`Day ${data.day}, Last Sugar ${data.sugar} mmol/L. Breakfast: ${plan.breakfast}. Lunch: ${plan.lunch}. Supper: ${plan.supper}. ${plan.avoid}\n\n${extra}`;
     speak(txt);
   }catch(e){speak('Nutrition not reachable')}
 }
@@ -378,20 +491,11 @@ function startListen(){
     else if(t.includes('weight')||t.includes('bmi')) openInput('weight');
     else if(t.includes('walk')||t.includes('jog')) openInput('walk');
     else if(t.includes('nutrition')||t.includes('food')) getNutrition();
-    else speak(`Heard ${t}. Say BP, Sugar, Weight, Walk, Nutrition`);
+    else speak(`Heard ${t}. Say BP, Sugar, Weight, Walk or Nutrition.`);
   };
-  rec.onerror=()=>{micBtn.classList.remove('listening'); statusEl.innerText='Could not hear';}
   rec.start();
 }
-
-function logout(){
-  currentUser=null;
-  document.getElementById('appCard').classList.add('hidden');
-  document.getElementById('authCard').classList.remove('hidden');
-  hideAllInputs();
-  document.getElementById('authMsg').innerText='Logged out. Karibu tena!';
-}
-window.onload=()=>{setTimeout(()=>{speak('Welcome to Tilisi V3. Sign up with name, get 3 free trials, then pay Till 6899566. Sugar is in mmol/L 1 to 33.');},700);};
+function logout(){location.reload();}
 </script>
 </body>
 </html>
